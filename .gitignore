@@ -1,0 +1,16 @@
+# macOS Finder metadata
+.DS_Store
+
+# Swap and backup files
+*.swp
+*.swo
+*.swn
+*.bak
+*.log
+
+# Temporary test files
+*.test
+
+# IDE folders
+.vscode/
+.idea/
