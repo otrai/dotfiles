@@ -1,0 +1,17 @@
+# 🧹 macOS system clutter
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# 🧠 Editor swap/backup files
+*.swp
+*.swo
+*.swn
+*.bak
+
+# 🧪 Logs and misc
+*.log
