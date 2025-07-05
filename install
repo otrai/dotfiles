@@ -1,0 +1,9 @@
+#!/bin/zsh
+
+cd "$(dirname "$0")"
+
+# Make sure the submodule is up to date
+git submodule update --init --recursive
+
+# Run Dotbot with your install configuration
+zsh modules/dotbot/bin/dotbot -c install.conf.yaml --verbose

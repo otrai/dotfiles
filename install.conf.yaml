@@ -1,0 +1,5 @@
+- shell:
+    - description: "Set up Git configuration"
+      command: scripts/setup_git.zsh
+      stdout: true
+      stderr: true
