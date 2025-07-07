@@ -6,4 +6,4 @@ cd "$(dirname "$0")"
 git submodule update --init --recursive
 
 # Run Dotbot with your install configuration
-zsh modules/dotbot/bin/dotbot -c install.conf.yaml --verbose
+zsh modules/dotbot/bin/dotbot -c install.conf.yaml
