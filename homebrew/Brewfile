@@ -1,2 +1,8 @@
+# Utility to configure multi-display resolutions and arrangements
+brew "displayplacer"
 # OpenAI's official ChatGPT desktop app
 cask "chatgpt"
+# App to write, plan, collaborate, and get organised
+cask "notion"
+# Open-source code editor
+cask "visual-studio-code"

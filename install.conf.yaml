@@ -1,5 +1,20 @@
 - shell:
-    - description: "Set up Git configuration"
-      command: scripts/setup_git.zsh
+    # 🧱 Install Homebrew and core tools (git, displayplacer, etc.)
+    - command: ./setup_homebrew.zsh
+      stdout: true
+      stderr: true
+
+    # 🔧 Configure global Git settings and aliases
+    - command: ./scripts/setup_git.zsh
+      stdout: true
+      stderr: true
+
+    # ⚙️ Set macOS preferences: trackpad gestures, Dark Mode, etc.
+    - command: ./scripts/setup_macos.zsh
+      stdout: true
+      stderr: true
+
+    # 🖥️ Prompt for display ID and apply resolution using displayplacer
+    - command: ./scripts/setup_display_scaling.zsh
       stdout: true
       stderr: true

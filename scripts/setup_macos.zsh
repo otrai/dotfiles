@@ -92,3 +92,13 @@ echo "✅ Show Desktop Gesture enabled"
 
 # Apply Dock-related gesture changes
 killall Dock
+
+echo "🌘 Configuring UI appearance..."
+
+# Set system appearance to Dark Mode
+defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
+
+# Restart UI to apply settings
+killall SystemUIServer
+
+echo "✅ UI appearance configured"
