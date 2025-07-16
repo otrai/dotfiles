@@ -1,8 +1,15 @@
 # Utility to configure multi-display resolutions and arrangements
 brew "displayplacer"
+# Distributed revision control system
+brew "git"
+# Mac App Store command-line interface
+brew "mas"
 # OpenAI's official ChatGPT desktop app
 cask "chatgpt"
 # App to write, plan, collaborate, and get organised
 cask "notion"
 # Open-source code editor
 cask "visual-studio-code"
+
+mas "MindNode", id: 1289197285
+mas "MindNode Next", id: 6446116532
