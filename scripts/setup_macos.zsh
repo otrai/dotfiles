@@ -1,5 +1,13 @@
 #!/bin/zsh
 
+echo "🔐 Apple ID Sign-In Required"
+osascript <<EOF
+display dialog "To enable iCloud features like Safari, Photos, and Messages:\n\n1. Open System Settings\n2. Click your name at the top (or 'Sign in with your Apple ID')\n3. Sign in and choose what to sync\n\n🧠 Reminder: If you use 1Password, turn OFF iCloud Passwords & Keychain manually." buttons {"OK"}
+do shell script "open -a 'System Settings'"
+EOF
+
+echo "🧠 Reminder: Disable iCloud Passwords & Keychain manually if you use 1Password instead"
+
 echo "🔧 Enabling Three-Finger Drag..."
 
 : <<'COMMENT_BLOCK'
