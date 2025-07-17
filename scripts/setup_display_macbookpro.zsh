@@ -17,7 +17,7 @@ DISPLAY_ID=$(displayplacer list | awk '
 ')
 
 # Step 2: Set default resolution configuration (customize this if needed)
-RES="1496x967"
+RES="1312x848"
 HZ="120"
 COLOR="8"
 SCALING="on"
