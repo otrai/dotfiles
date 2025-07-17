@@ -1,29 +1,27 @@
 #!/bin/zsh
 
-# Ask for admin password upfront
+# 1. Ask for admin password upfront
 if ! sudo -v &>/dev/null; then
   echo "🔐 This script requires sudo privileges."
   exit 1
 fi
 
-# Step 0: Ensure Xcode Command Line Tools are installed
+# 2. Install Xcode Command Line Tools (if not present)
 if ! xcode-select -p &>/dev/null; then
   echo "🔧 Installing Xcode Command Line Tools..."
   xcode-select --install
-
   echo "⏳ Waiting for Xcode Command Line Tools to finish installing..."
   read "REPLY?📦 Press [Enter] once installation is complete to continue..."
 else
   echo "✅ Xcode Command Line Tools already installed"
 fi
 
-# Step 1: Install Homebrew if it's not installed
+# 3. Install Homebrew (if not present)
 if ! command -v brew &>/dev/null; then
   echo "🍺 Installing Homebrew..."
-
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  # Set Homebrew environment for this session
+  # Configure brew for this shell session
   if [[ -x "/opt/homebrew/bin/brew" ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
   elif [[ -x "/usr/local/bin/brew" ]]; then
@@ -37,7 +35,7 @@ if ! command -v brew &>/dev/null; then
 else
   echo "✅ Homebrew already installed"
 
-  # Ensure environment is still set properly
+  # Make sure environment is configured
   if [[ -x "/opt/homebrew/bin/brew" ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
   elif [[ -x "/usr/local/bin/brew" ]]; then
@@ -45,9 +43,17 @@ else
   fi
 fi
 
-# Step 2: Install packages from Brewfile
+# 4. Install packages from Brewfile
 DOTFILES_PATH="$HOME/.dotfiles"
 BREWFILE="$DOTFILES_PATH/homebrew/Brewfile"
+
+# 4a. Prompt user to sign in if using MAS apps
+if [[ -f "$BREWFILE" ]] && grep -q '^mas ' "$BREWFILE"; then
+  echo "🛒 App Store apps detected in Brewfile (via mas)."
+  echo "💡 Please make sure you're signed in to the App Store *before* continuing."
+  echo "⏸️ Press Enter once you're signed in and ready to continue..."
+  read -r
+fi
 
 if [[ -f "$BREWFILE" ]]; then
   echo "📦 Installing packages from Brewfile..."
@@ -58,7 +64,7 @@ else
   exit 1
 fi
 
-# Step 3: Update, upgrade, and clean up Homebrew
+# 5. Perform Homebrew maintenance
 echo "🔄 Updating Homebrew..."
 brew update
 
@@ -72,17 +78,9 @@ echo "✅ Homebrew maintenance complete."
 
 : <<'END_BLOCK_COMMENT'
 
-# -----------------------------------------------
-# 🚧 Step 4: Remove quarantine flags from GUI apps
-# -----------------------------------------------
-# TODO: This block attempts to remove quarantine flags recursively
-#       using `xattr -dr` on GUI apps like ChatGPT.
-#       However, App Sandbox and System Integrity Protection (SIP)
-#       prevent modification of deeply nested files in .app bundles.
-#       Solution options:
-#         - Install casks with `--no-quarantine` instead (preferred)
-#         - Drop to root with `sudo` and SIP-disabled system (not ideal)
-#         - Try using `spctl --remove` (unreliable for full unquarantine)
+# 6. 🚧 Quarantine removal logic (commented for now)
+# These steps require additional work and permissions to be effective.
+# See the TODOs for details on possible solutions and security constraints.
 
 apps=(
   "Visual Studio Code"
@@ -100,21 +98,12 @@ for app in "${apps[@]}"; do
   fi
 done
 
-# -------------------------------------------------
-# 🛠️ Step 5: Remove quarantine flags from CLI tools
-# -------------------------------------------------
-# TODO: This works better than GUI apps but still may fail
-#       for tools with internal nested binaries or symlinks.
-#       Future option:
-#         - Use `--no-quarantine` at install time
-#         - Or manually handle sensitive binaries only
-
 tools=(
   "displayplacer"
 )
 
 for tool in "${tools[@]}"; do
-  tool_path="$(which $tool 2>/dev/null)"
+  tool_path="$(which "$tool" 2>/dev/null)"
   if [[ -x "$tool_path" ]]; then
     echo "🔧 Unquarantining: $tool_path"
     sudo xattr -dr com.apple.quarantine "$tool_path"
@@ -127,7 +116,7 @@ END_BLOCK_COMMENT
 
 echo "✅ Skipped quarantine removal — see TODOs in script."
 
-# Step X: VS Code CLI setup check
+# 7. Prompt user to enable VS Code CLI
 if ! command -v code &>/dev/null; then
   echo "⚠️ VS Code CLI not found."
   echo "💡 Open VS Code, press ⇧⌘P, and run: Shell Command: Install 'code' command in PATH"
@@ -135,8 +124,7 @@ if ! command -v code &>/dev/null; then
   read "REPLY?🔄 Press [Enter] once you've added the 'code' command..."
 fi
 
-# Step X: Install VS Code extensions
-# Step X: Install VS Code extensions
+# 8. Install VS Code extensions from extensions.txt
 VSCODE_EXTENSIONS_FILE="$DOTFILES_PATH/ide/vscode/extensions.txt"
 
 if command -v code &>/dev/null && [[ -f "$VSCODE_EXTENSIONS_FILE" ]]; then
