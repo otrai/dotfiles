@@ -1,26 +1,17 @@
 #!/bin/zsh
 
-echo "🖥️ Configuring display scaling using displayplacer..."
+# ---------------------------------------------
+# 🖥️ Detect Mac model and apply display settings
+# ---------------------------------------------
 
-if command -v displayplacer &>/dev/null; then
-  echo ""
-  echo "📋 Listing your current display(s):"
-  echo ""
-  displayplacer list
+MAC_MODEL=$(sysctl -n hw.model)
 
-  echo ""
-  echo "👉 Copy the display ID of your main screen from above."
-  echo -n "🆔 Paste the display ID here: "
-  read display_id
-
-  echo -n "📏 Desired resolution (e.g., 1440x900): "
-  read resolution
-
-  echo ""
-  echo "⚙️ Applying resolution '$resolution' to display ID '$display_id'..."
-  displayplacer "id:$display_id res:$resolution scaling:on"
-
-  echo "✅ Display resolution applied."
+if [[ "$MAC_MODEL" == "MacBookPro"* ]]; then
+  echo "💻 MacBook Pro detected — applying MacBook display settings..."
+  ./scripts/setup_display_macbookpro.zsh
+elif [[ "$MAC_MODEL" == "MacPro"* || "$MAC_MODEL" == "MacStudio"* ]]; then
+  echo "🖥️ Desktop Mac detected — applying Pro Display XDR settings..."
+  ./scripts/setup_display_xdr.zsh
 else
-  echo "⚠️ displayplacer is not installed. Skipping display configuration."
+  echo "⚠️ Unknown machine type ($MAC_MODEL) — skipping display setup."
 fi
