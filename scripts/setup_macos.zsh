@@ -6,8 +6,6 @@ display dialog "To enable iCloud features like Safari, Photos, and Messages:\n\n
 do shell script "open -a 'System Settings'"
 EOF
 
-echo "🧠 Reminder: Disable iCloud Passwords & Keychain manually if you use 1Password instead"
-
 echo "🔧 Enabling Three-Finger Drag..."
 
 : <<'COMMENT_BLOCK'
@@ -25,26 +23,24 @@ These commands are kept for documentation purposes and legacy reference only.
 ───────────────────────────────────────────────────────────────────────────────
 COMMENT_BLOCK
 
-# Enable Three-Finger Drag (legacy settings — no longer effective)
+# Legacy commands (no longer effective)
 # defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
 # defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
 # defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 2
-
-# Accessibility system preferences (ignored by Ventura+)
-# sudo defaults write com.apple.universalaccess dragLock -bool false  # Normal drag behavior (no drag lock)
+# sudo defaults write com.apple.universalaccess dragLock -bool false
 # sudo defaults write com.apple.universalaccess mouseDriver -int 1
 
 echo "⚠️ Three-Finger Drag must be enabled manually in System Settings"
 
 echo "🔧 Enabling Tap to Click..."
 
-# Enable tap to click for the built-in trackpad
+# Built-in trackpad
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
-# Enable tap to click for current user (affects new trackpads too)
+# Per-user setting (current user)
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# Enable tap to click for login screen
+# Login screen (global)
 sudo defaults write com.apple.mouse.tapBehavior -int 1
 
 echo "✅ Tap to Click enabled"
@@ -53,10 +49,11 @@ echo "🔧 Enabling Secondary Click (two-finger tap)..."
 
 # Enable right-click behavior
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
-defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
 defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
 
-# Set style to two-finger tap (0 = bottom right, 1 = bottom left, 2 = two-finger tap)
+# Set right-click style to two-finger tap
+# 0 = bottom right corner, 1 = bottom left corner, 2 = two-finger tap
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
 defaults write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2
 
@@ -64,49 +61,47 @@ echo "✅ Secondary Click enabled (two-finger tap)"
 
 echo "🔧 Setting swipe gestures to use four fingers..."
 
-# Force swipe gestures (Mission Control, App Exposé, full-screen apps) to use 4 fingers
+# 1 = force 4-finger swipe instead of 3-finger
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 1
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 1
 
 echo "✅ Swipe gestures set to four fingers"
 
-echo "🔧 Enabling Mission Control Gesture..."
+echo "🔧 Enabling Dock-related gestures and behaviors..."
 
-# Enable Mission Control gesture (swipe up)
+# Enable swipe up for Mission Control
 defaults write com.apple.dock showMissionControlGestureEnabled -int 1
 
-echo "✅ Mission Control Gesture enabled"
-
-echo "🔧 Enabling App Exposé Gesture..."
-
-# Enable App Exposé gesture (swipe down)
+# Enable swipe down for App Exposé
 defaults write com.apple.dock showAppExposeGestureEnabled -int 1
 
-echo "✅ App Exposé Gesture enabled"
-
-echo "🔧 Enabling Launchpad Gesture (pinch)..."
-
-# Enable pinch gesture to open Launchpad
+# Enable pinch for Launchpad
 defaults write com.apple.dock showLaunchpadGestureEnabled -int 1
 
-echo "✅ Launchpad Gesture enabled"
-
-echo "🔧 Enabling Show Desktop Gesture (spread)..."
-
-# Enable spread gesture to show desktop
+# Enable spread gesture to show Desktop
 defaults write com.apple.dock showDesktopGestureEnabled -int 1
 
-echo "✅ Show Desktop Gesture enabled"
+# Automatically hide Dock
+defaults write com.apple.dock autohide -bool true
 
-# Apply Dock-related gesture changes
+echo "✅ Dock-related gestures and behaviors configured"
+
+# Apply Dock settings
 killall Dock
+
+echo "🔧 Disabling Auto-Capitalization..."
+
+# Turn off automatic capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+echo "✅ Auto-Capitalization disabled"
 
 echo "🌘 Configuring UI appearance..."
 
 # Set system appearance to Dark Mode
 defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
 
-# Restart UI to apply settings
+# Apply UI appearance settings
 killall SystemUIServer
 
 echo "✅ UI appearance configured"
