@@ -4,6 +4,10 @@ brew "displayplacer"
 brew "git"
 # Mac App Store command-line interface
 brew "mas"
+
+# -------------------------------
+# 🧠 Core Productivity Tools
+# -------------------------------
 # OpenAI's official ChatGPT desktop app
 cask "chatgpt"
 # App to write, plan, collaborate, and get organised
@@ -11,5 +15,20 @@ cask "notion"
 # Open-source code editor
 cask "visual-studio-code"
 
+# -------------------------------
+# 📚 Productivity / Document Tools
+# -------------------------------
+# 🧾 PDF viewer/editor (requires license and manual sign-in)
+cask "pdf-expert"
+
+# -------------------------------
+# 🧠 Creativity and Thinking Tools
+# -------------------------------
 mas "MindNode", id: 1289197285
 mas "MindNode Next", id: 6446116532
+
+# -------------------------------
+# 🔐 Security Tools / Password Managers
+# -------------------------------
+# Primary password manager (uses old email to sign-in on computer)
+cask "1password"
