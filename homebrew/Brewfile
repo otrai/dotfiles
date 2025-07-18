@@ -20,6 +20,8 @@ cask "visual-studio-code"
 # -------------------------------
 # 🧾 PDF viewer/editor (requires license and manual sign-in)
 cask "pdf-expert"
+# 🧩 Microsoft Office suite (may trigger Microsoft AutoUpdate with sudo later)
+cask "microsoft-office"
 
 # -------------------------------
 # 🧠 Creativity and Thinking Tools
