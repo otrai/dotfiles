@@ -105,3 +105,21 @@ defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
 killall SystemUIServer
 
 echo "✅ UI appearance configured"
+
+echo "🔋 Configuring Power & Security Settings..."
+
+# Disable screen saver (no animation when idle)
+defaults -currentHost write com.apple.screensaver idleTime -int 0
+
+# Set display to turn off after 15 minutes (battery or charger)
+sudo pmset -a displaysleep 15
+
+# Set system sleep to 45 minutes (battery or charger)
+sudo pmset -a sleep 45
+
+# Require password 5 minutes after display turns off
+# This gives you a short buffer while keeping your system secure
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 300
+
+echo "✅ Power & Security Settings configured"
