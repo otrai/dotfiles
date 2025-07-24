@@ -123,3 +123,15 @@ defaults write com.apple.screensaver askForPassword -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 300
 
 echo "✅ Power & Security Settings configured"
+
+echo "🗣️ Dictation Setup"
+
+echo "🧠 Reminder: When prompted with 'Improve Siri & Dictation', click 'Not Now' to avoid sharing audio recordings with Apple."
+
+echo "📍 To enable Dictation:"
+echo "1. Open System Settings → Keyboard"
+echo "2. Turn on Dictation"
+echo "3. Confirm any permissions (e.g. mic access, language)"
+echo ""
+echo "⏸️ Press Enter when you're done enabling dictation to continue..."
+read
