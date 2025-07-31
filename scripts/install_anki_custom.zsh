@@ -93,6 +93,7 @@ echo ""
 echo "🖼️ Configure the custom background image:"
 echo "   - Open Anki → AnKing → 'Custom Background Image and Gear Icon'"
 echo "   - Set the background to an image in the backgrounds folder"
+echo "   - Enable show background image in reviewer, toolbar, and toolbar top/bottom"
 
 echo ""
 echo "🗂️ Optional: Change Browser layout to vertical view:"
