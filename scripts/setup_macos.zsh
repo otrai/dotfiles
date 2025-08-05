@@ -183,7 +183,6 @@ echo "✅ Dictation setup complete"
 # ---------------------------------------------------
 # 🔐 1Password Accessibility Permission
 # ---------------------------------------------------
-echo ""
 echo "🔐 1Password Quick Access requires enabling Accessibility:"
 echo "   1. Open System Settings → Privacy & Security → Accessibility"
 echo "   2. Click the 🔓 lock in the bottom-left corner and enter your password"
@@ -192,6 +191,21 @@ echo "   4. Restart 1Password if it was already open"
 open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
 read "ack_access?Press [Enter] after enabling 1Password in Accessibility to continue..."
 echo "✅ 1Password Quick Access setup complete."
+
+# ---------------------------------------------------
+# 🔐 iCloud Keychain & Safari Password Prompts
+# ---------------------------------------------------
+echo "🔐 Prevent Safari and macOS from prompting to save passwords..."
+
+echo "🧠 Manual Steps:"
+echo "   1. Open System Settings → [Your Name] → iCloud → Passwords & Keychain"
+echo "   2. Toggle OFF 'Passwords & Keychain'"
+echo "   3. Then open Safari → Settings → AutoFill"
+echo "      - Turn off 'Usernames and passwords'"
+echo "      - Optionally disable other autofill fields"
+echo "   4. Restart your Mac to ensure changes persist"
+
+read "ack_keychain?Press [Enter] once you've disabled iCloud Keychain and Safari AutoFill..."
 
 # ---------------------------------------------------
 # 🎉 Completion Message
