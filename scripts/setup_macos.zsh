@@ -1,13 +1,17 @@
 #!/bin/zsh
 
+# ---------------------------------------------------
+# 🔐 Apple ID Sign-In Prompt
+# ---------------------------------------------------
 echo "🔐 Apple ID Sign-In Required"
 osascript <<EOF
 display dialog "To enable iCloud features like Safari, Photos, and Messages:\n\n1. Open System Settings\n2. Click your name at the top (or 'Sign in with your Apple ID')\n3. Sign in and choose what to sync\n\n🧠 Reminder: If you use 1Password, turn OFF iCloud Passwords & Keychain manually." buttons {"OK"}
 do shell script "open -a 'System Settings'"
 EOF
 
-echo "🔧 Enabling Three-Finger Drag..."
-
+# ---------------------------------------------------
+# 🖱️ Trackpad: Three-Finger Drag
+# ---------------------------------------------------
 : <<'COMMENT_BLOCK'
 ───────────────────────────────────────────────────────────────────────────────
 ⚠️ NOTE: As of macOS Ventura and later, these commands no longer fully enable
@@ -20,75 +24,91 @@ macOS now requires manual GUI interaction to enable:
   - "Dragging style" → "Three Finger Drag"
 
 These commands are kept for documentation purposes and legacy reference only.
-───────────────────────────────────────────────────────────────────────────────
-COMMENT_BLOCK
-
 # Legacy commands (no longer effective)
 # defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
 # defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
 # defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 2
 # sudo defaults write com.apple.universalaccess dragLock -bool false
 # sudo defaults write com.apple.universalaccess mouseDriver -int 1
-
+COMMENT_BLOCK
+───────────────────────────────────────────────────────────────────────────────
+echo "🔧 Enabling Three-Finger Drag..."
 echo "⚠️ Three-Finger Drag must be enabled manually in System Settings"
+echo "   System Settings → Accessibility → Pointer Control → Trackpad Options…"
+echo "   Enable 'Use trackpad for dragging' and set style to 'Three Finger Drag'"
+read "ack_three_finger?Press [Enter] once Three-Finger Drag is enabled..."
 
+# ---------------------------------------------------
+# 🖱️ Trackpad: Tap to Click
+# ---------------------------------------------------
 echo "🔧 Enabling Tap to Click..."
 
-# Built-in trackpad
+# Enable tap-to-click on built-in trackpad
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
-# Per-user setting (current user)
+# Enable tap-to-click for current user
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# Login screen (global)
+# Enable tap-to-click on login screen (global)
 sudo defaults write com.apple.mouse.tapBehavior -int 1
 
 echo "✅ Tap to Click enabled"
 
+# ---------------------------------------------------
+# 🖱️ Trackpad: Secondary Click (Two-Finger Tap)
+# ---------------------------------------------------
 echo "🔧 Enabling Secondary Click (two-finger tap)..."
 
-# Enable right-click behavior
+# Enable right-click on trackpad
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
 defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
 defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
 
-# Set right-click style to two-finger tap
-# 0 = bottom right corner, 1 = bottom left corner, 2 = two-finger tap
+# Set right-click to two-finger tap (2 = two-finger tap)
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
 defaults write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2
 
 echo "✅ Secondary Click enabled (two-finger tap)"
 
+# ---------------------------------------------------
+# 🖱️ Trackpad: Swipe Gestures
+# ---------------------------------------------------
 echo "🔧 Setting swipe gestures to use four fingers..."
 
-# 1 = force 4-finger swipe instead of 3-finger
+# Force 4-finger swipe (instead of 3-finger)
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 1
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 1
 
 echo "✅ Swipe gestures set to four fingers"
 
+# ---------------------------------------------------
+# 🧭 Dock & Mission Control Gestures
+# ---------------------------------------------------
 echo "🔧 Enabling Dock-related gestures and behaviors..."
 
-# Enable swipe up for Mission Control
+# Swipe up for Mission Control
 defaults write com.apple.dock showMissionControlGestureEnabled -int 1
 
-# Enable swipe down for App Exposé
+# Swipe down for App Exposé
 defaults write com.apple.dock showAppExposeGestureEnabled -int 1
 
-# Enable pinch for Launchpad
+# Pinch for Launchpad
 defaults write com.apple.dock showLaunchpadGestureEnabled -int 1
 
-# Enable spread gesture to show Desktop
+# Spread to show Desktop
 defaults write com.apple.dock showDesktopGestureEnabled -int 1
 
 # Automatically hide Dock
 defaults write com.apple.dock autohide -bool true
 
-echo "✅ Dock-related gestures and behaviors configured"
-
 # Apply Dock settings
 killall Dock
 
+echo "✅ Dock-related gestures and behaviors configured"
+
+# ---------------------------------------------------
+# 📝 Typing Settings
+# ---------------------------------------------------
 echo "🔧 Disabling Auto-Capitalization..."
 
 # Turn off automatic capitalization
@@ -96,6 +116,9 @@ defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 
 echo "✅ Auto-Capitalization disabled"
 
+# ---------------------------------------------------
+# 🌘 UI Appearance
+# ---------------------------------------------------
 echo "🌘 Configuring UI appearance..."
 
 # Set system appearance to Dark Mode
@@ -106,24 +129,43 @@ killall SystemUIServer
 
 echo "✅ UI appearance configured"
 
+# ---------------------------------------------------
+# 📁 Finder Preferences
+# ---------------------------------------------------
+
+echo "🔧 Enabling Finder Path Bar..."
+
+# Show full file system path at the bottom of Finder windows
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Apply changes
+killall Finder
+
+echo "✅ Finder Path Bar enabled (View → Show Path Bar)"
+
+# ---------------------------------------------------
+# 🔋 Power & Security Settings
+# ---------------------------------------------------
 echo "🔋 Configuring Power & Security Settings..."
 
-# Disable screen saver (no animation when idle)
+# Disable screen saver (0 = never activate)
 defaults -currentHost write com.apple.screensaver idleTime -int 0
 
-# Set display to turn off after 15 minutes (battery or charger)
+# Turn off display after 15 minutes (on battery or charger)
 sudo pmset -a displaysleep 15
 
-# Set system sleep to 45 minutes (battery or charger)
+# Sleep the system after 45 minutes (on battery or charger)
 sudo pmset -a sleep 45
 
-# Require password 5 minutes after display turns off
-# This gives you a short buffer while keeping your system secure
+# Require password after 5 minutes of inactivity
 defaults write com.apple.screensaver askForPassword -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 300
 
 echo "✅ Power & Security Settings configured"
 
+# ---------------------------------------------------
+# 🗣️ Dictation Setup
+# ---------------------------------------------------
 echo "🗣️ Dictation Setup"
 
 echo "🧠 Reminder: When prompted with 'Improve Siri & Dictation', click 'Not Now' to avoid sharing audio recordings with Apple."
@@ -135,3 +177,25 @@ echo "3. Confirm any permissions (e.g. mic access, language)"
 echo ""
 echo "⏸️ Press Enter when you're done enabling dictation to continue..."
 read
+
+echo "✅ Dictation setup complete"
+
+# ---------------------------------------------------
+# 🔐 1Password Accessibility Permission
+# ---------------------------------------------------
+echo ""
+echo "🔐 1Password Quick Access requires enabling Accessibility:"
+echo "   1. Open System Settings → Privacy & Security → Accessibility"
+echo "   2. Click the 🔓 lock in the bottom-left corner and enter your password"
+echo "   3. Enable the checkbox next to '1Password'"
+echo "   4. Restart 1Password if it was already open"
+open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+read "ack_access?Press [Enter] after enabling 1Password in Accessibility to continue..."
+echo "✅ 1Password Quick Access setup complete."
+
+# ---------------------------------------------------
+# 🎉 Completion Message
+# ---------------------------------------------------
+echo ""
+echo "🎉 macOS settings configuration complete!"
+echo "🔁 You may need to restart your Mac or individual apps (e.g., 1Password, Anki) for all settings to take effect."
