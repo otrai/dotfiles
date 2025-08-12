@@ -98,8 +98,11 @@ defaults write com.apple.dock showLaunchpadGestureEnabled -int 1
 # Spread to show Desktop
 defaults write com.apple.dock showDesktopGestureEnabled -int 1
 
-# Automatically hide Dock
+# Automatically hide the Dock when not in use
 defaults write com.apple.dock autohide -bool true
+
+# Hide the 'Recent Applications' section to save Dock space
+defaults write com.apple.dock show-recents -bool false
 
 # Apply Dock settings
 killall Dock
@@ -132,7 +135,6 @@ echo "✅ UI appearance configured"
 # ---------------------------------------------------
 # 📁 Finder Preferences
 # ---------------------------------------------------
-
 echo "🔧 Enabling Finder Path Bar..."
 
 # Show full file system path at the bottom of Finder windows
@@ -142,6 +144,19 @@ defaults write com.apple.finder ShowPathbar -bool true
 killall Finder
 
 echo "✅ Finder Path Bar enabled (View → Show Path Bar)"
+
+# ---------------------------------------------------
+# 📸 Screenshot Settings
+# ---------------------------------------------------
+echo "📸 Configuring screenshots to copy to clipboard..."
+
+# Always copy screenshots to clipboard instead of saving to desktop
+defaults write com.apple.screencapture target clipboard
+
+# Apply changes
+killall SystemUIServer
+
+echo "✅ Screenshots will now be copied to clipboard by default"
 
 # ---------------------------------------------------
 # 🔋 Power & Security Settings
