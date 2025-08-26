@@ -1,0 +1,13 @@
+Host github.com
+  HostName github.com
+  User git
+
+  # Prefer 1Password agent if available (harmless if missing)
+  IdentityAgent ~/.1password/agent.sock
+
+  # Fallback to macOS native key on disk + keychain
+  IdentityFile ~/.ssh/id_ed25519
+  AddKeysToAgent yes
+  UseKeychain yes
+
+  IdentitiesOnly yes

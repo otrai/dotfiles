@@ -12,6 +12,7 @@ EOF
 # ---------------------------------------------------
 # 🖱️ Trackpad: Three-Finger Drag
 # ---------------------------------------------------
+
 : <<'COMMENT_BLOCK'
 ───────────────────────────────────────────────────────────────────────────────
 ⚠️ NOTE: As of macOS Ventura and later, these commands no longer fully enable
@@ -30,8 +31,9 @@ These commands are kept for documentation purposes and legacy reference only.
 # defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 2
 # sudo defaults write com.apple.universalaccess dragLock -bool false
 # sudo defaults write com.apple.universalaccess mouseDriver -int 1
-COMMENT_BLOCK
 ───────────────────────────────────────────────────────────────────────────────
+COMMENT_BLOCK
+
 echo "🔧 Enabling Three-Finger Drag..."
 echo "⚠️ Three-Finger Drag must be enabled manually in System Settings"
 echo "   System Settings → Accessibility → Pointer Control → Trackpad Options…"

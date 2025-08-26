@@ -1,20 +1,41 @@
+- defaults:
+    link:
+      relink: true
+
+# 📂 Create necessary SSH directory
+- create:
+    - ~/.ssh
+
+# 🔗 Link SSH config from dotfiles to ~/.ssh/config
+- link:
+    ~/.ssh/config:
+      path: config/ssh/config
+      create: true
+
 - shell:
     # 🧱 Step 1: Install Homebrew and core tools (git, mas, displayplacer, etc.)
     - command: ./scripts/setup_homebrew.zsh
       stdout: true
       stderr: true
 
-    # 🔧 Step 2: Configure global Git settings and aliases
+    # 🔐 Step 2: SSH setup (1Password agent if available, else macOS key)
+    #    • If prompted, enable 1Password → Settings → Developer → “Use 1Password as SSH Agent”
+    #    • Otherwise, the script can generate a local SSH key and add it to your keychain
+    - command: ./scripts/setup_ssh.zsh
+      stdout: true
+      stderr: true
+
+    # 🔧 Step 3: Configure global Git settings and aliases
     - command: ./scripts/setup_git.zsh
       stdout: true
       stderr: true
 
-    # ⚙️ Step 3: Set macOS preferences: trackpad gestures, Dark Mode, etc.
+    # ⚙️ Step 4: Set macOS preferences: trackpad gestures, Dark Mode, etc.
     - command: ./scripts/setup_macos.zsh
       stdout: true
       stderr: true
 
-    # 🖥️ Step 4: Prompt for display ID and apply resolution using displayplacer
+    # 🖥️ Step 5: Prompt for display ID and apply resolution using displayplacer
     - command: ./scripts/setup_display.zsh
       stdout: true
       stderr: true
