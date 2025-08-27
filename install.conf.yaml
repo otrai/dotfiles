@@ -13,29 +13,32 @@
       create: true
 
 - shell:
-    # 🧱 Step 1: Install Homebrew and core tools (git, mas, displayplacer, etc.)
+    # 🧱 Step 1: Install Homebrew and core tools (git, mas, displayplacer, browsers, 1Password, etc.)
     - command: ./scripts/setup_homebrew.zsh
       stdout: true
       stderr: true
 
     # 🔐 Step 2: SSH setup (1Password agent if available, else macOS key)
-    #    • If prompted, enable 1Password → Settings → Developer → “Use 1Password as SSH Agent”
-    #    • Otherwise, the script can generate a local SSH key and add it to your keychain
     - command: ./scripts/setup_ssh.zsh
       stdout: true
       stderr: true
 
-    # 🔧 Step 3: Configure global Git settings and aliases
+    # 📝 Step 3: Configure global Git settings and aliases
     - command: ./scripts/setup_git.zsh
       stdout: true
       stderr: true
 
-    # ⚙️ Step 4: Set macOS preferences: trackpad gestures, Dark Mode, etc.
+    # 🌐 Step 4: Set up browsers + 1Password extension (Safari/Chrome/Firefox)
+    - command: ./scripts/setup_browsers.zsh
+      stdout: true
+      stderr: true
+
+    # ⚙️ Step 5: Configure macOS preferences (trackpad, Dock, Dark Mode, power, etc.)
     - command: ./scripts/setup_macos.zsh
       stdout: true
       stderr: true
 
-    # 🖥️ Step 5: Prompt for display ID and apply resolution using displayplacer
+    # 🖥️ Step 6: Prompt for display ID and apply resolution using displayplacer
     - command: ./scripts/setup_display.zsh
       stdout: true
       stderr: true

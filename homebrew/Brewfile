@@ -34,3 +34,12 @@ mas "MindNode Next", id: 6446116532
 # -------------------------------
 # Primary password manager (uses old email to sign-in on computer)
 cask "1password"
+mas "1Password for Safari", id: 1569813296
+
+# -------------------------------
+# 🌐 Browsers
+# -------------------------------
+# Cross-platform browser by Google
+cask "google-chrome"
+# Open-source browser by Mozilla
+cask "firefox"
