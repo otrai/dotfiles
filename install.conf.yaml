@@ -1,6 +1,10 @@
 - defaults:
     link:
       relink: true
+      create: true
+
+# 🧹 Remove broken symlinks inside $HOME that Dotbot manages
+- clean: ['~']
 
 # 📂 Create necessary SSH directory
 - create:
@@ -8,9 +12,7 @@
 
 # 🔗 Link SSH config from dotfiles to ~/.ssh/config
 - link:
-    ~/.ssh/config:
-      path: config/ssh/config
-      create: true
+    ~/.ssh/config: config/ssh/config
 
 - shell:
     # 🧱 Step 1: Install Homebrew and core tools (git, mas, displayplacer, browsers, 1Password, etc.)
