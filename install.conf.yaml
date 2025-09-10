@@ -6,20 +6,18 @@
 # 🧹 Remove broken symlinks inside $HOME that Dotbot manages
 - clean: ['~']
 
-- create:
-    # 📂 Ensure Work directory exists
-    - ~/Work
-
-# 🔗 Link SSH config from dotfiles to ~/.ssh/config
 - link:
     # 🔐 SSH config
     ~/.ssh/config: config/ssh/config
-    
+
     # 📝 Git configs
     ~/.gitconfig: config/git/gitconfig
     ~/.config/git/ignore:
       path: config/git/gitignore_global-macos
-      create: true
+
+- create:
+    # 📂 Ensure Work directory exists
+    - ~/Work
 
 - shell:
     # 🧱 Step 1: Install Homebrew and core tools (git, mas, displayplacer, browsers, 1Password, etc.)
