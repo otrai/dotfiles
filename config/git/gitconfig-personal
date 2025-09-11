@@ -2,4 +2,4 @@
 	name = Matthew Fawcett
 	email = 107450303+otrai@users.noreply.github.com
 [core]
-    excludesfile = ~/.dotfiles/config/git/gitignore_global-macos
+    excludesfile = ~/.config/git/ignore
