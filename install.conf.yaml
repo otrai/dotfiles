@@ -30,7 +30,7 @@
       stdout: true
       stderr: true
 
-    # 📝 Step 3: Configure global Git settings and aliases
+    # 📝 Step 3: Git Validation
     - command: ./scripts/setup_git.zsh
       stdout: true
       stderr: true
