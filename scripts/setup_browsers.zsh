@@ -1,77 +1,59 @@
-#!/bin/zsh
-set -e
+#!/usr/bin/env zsh
+set -euo pipefail
 
-# ---------------------------------------------------
-# 🌐 1Password + Browsers (Personal)
-# ---------------------------------------------------
-echo "🌐 Setting up 1Password with Safari, Chrome, and Firefox…"
+pause() { read -r "?⏸️  $1"; }
+say()   { echo "$@"; }
 
-# (Optional) Make sure 1Password desktop is running so the extension can pair
-if [ -d "/Applications/1Password.app" ]; then
-  echo "🔐 Launching 1Password…"
-  open -a "1Password" || true
+say "🌐 Setting up 1Password + browsers (terminal prompts only)…"
+
+# --- 1Password desktop & Accessibility (if installed) ---
+if [[ -d "/Applications/1Password.app" ]]; then
+  say "🔐 Launching 1Password to ensure it registers for Accessibility…"
+  open -ga "1Password" || true
   sleep 2
+  say "🔐 Grant 1Password Accessibility permission:"
+  say "   System Settings → Privacy & Security → Accessibility → enable '1Password'"
+  say "   (If it's already enabled, you're good.)"
+  open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility" || open -a "System Settings"
+  pause "Press [Enter] after confirming Accessibility for 1Password…"
+else
+  say "ℹ️  1Password not installed — skipping Accessibility step."
 fi
 
-# ---------------------------------------------------
-# 🔐 1Password Accessibility permission (needed for Quick Access etc.)
-# ---------------------------------------------------
-echo "🔐 Opening Accessibility preferences for 1Password…"
-open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility" || open -a "System Settings"
-read "ack_access?⏸️  Press [Enter] after enabling 1Password in Accessibility (or if already enabled)…"
-echo "✅ Accessibility enabled for 1Password"
+# --- Safari + 1Password extension ---
+say ""
+say "🧭 Safari: configure 1Password extension & disable built-in AutoFill"
+say "   1) Allow the 1Password extension when prompted (choose 'Always Allow')."
+say "   2) Safari → Settings → Websites → 1Password → set 'Allow' for all."
+say "   3) Safari → Settings → Extensions → ensure '1Password' is enabled."
+say "   4) Safari → Settings → AutoFill → turn OFF everything (you use 1Password)."
+open -a Safari "https://github.com/login" || true
+pause "Press [Enter] after you’ve adjusted Safari’s permissions/AutoFill…"
 
-# ---------------------------------------------------
-# 🧭 Safari → 1Password permission (Allow on all websites)
-# ---------------------------------------------------
-# Tip: opening Safari with no URL often triggers the permission prompt from the extension
-echo "🧭 Opening Safari to trigger 1Password permission prompt…"
-open -a Safari "https://my.1password.com"
-sleep 2
-
-osascript <<'EOF'
-display dialog "Safari → 1Password permission setup:\n\n1. When prompted, choose 'Always Allow'\n2. Select 'Use on Every Website'\n\nDouble-check (if needed):\n  Safari → Settings → Websites → 1Password\n    • All listed sites: Allow\n    • When visiting other websites: Allow\n\nIf the permission dialog didn’t appear, configure it directly in Settings." buttons {"OK"} default button 1 with icon note
-EOF
-
-# Quick verification on GitHub (you should see 1Password offer to fill)
-open -a "Safari" "https://github.com/login"
-osascript <<'EOF'
-display dialog "Verify on GitHub:\n\n• Confirm 1Password offers to fill on the login page\n• If not, try Command+\\ to trigger Autofill\n\nStill no luck? Check:\n  Safari → Settings → Extensions → 1Password (enabled)\n  Safari → Settings → Websites → 1Password → Allow" buttons {"OK"} default button 1 with icon note
-EOF
-
-# ---------------------------------------------------
-# 🧩 Safari → Disable built-in AutoFill (avoid conflicts)
-# ---------------------------------------------------
-osascript <<'EOF'
-display dialog "Disable Safari AutoFill so 1Password is the only manager:\n\nSafari → Settings → AutoFill\n  • Turn OFF all items:\n    - Using information from contacts\n    - User names and passwords\n    - Credit cards\n    - Other forms" buttons {"OK"} default button 1 with icon note
-EOF
-echo "✅ Safari AutoFill: review complete"
-
-# ---------------------------------------------------
-# 🌐 Chrome → first-run choices
-# ---------------------------------------------------
-if [ -d "/Applications/Google Chrome.app" ]; then
-  open -a "Google Chrome" || true
+# --- Chrome first-run (if installed) ---
+if [[ -d "/Applications/Google Chrome.app" ]]; then
+  say ""
+  say "🌐 Chrome first-run tips:"
+  say "   • On first launch, uncheck 'Set Google Chrome as your default browser'."
+  say "   • Uncheck usage/crash reporting if you prefer."
+  say "   • Sign into Chrome if you want your extensions/settings to sync."
+  open -ga "Google Chrome" || true
+  pause "Press [Enter] once Chrome’s first-run choices are handled…"
 fi
-osascript <<'EOF'
-display dialog "Google Chrome first-run setup:\n\n1. Uncheck 'Set Google Chrome as your default browser'\n2. Uncheck 'Help make Google Chrome better' (usage & crash reports)\n\nTip: If you sign into your Google account, extensions (incl. 1Password), bookmarks, and settings can sync automatically." buttons {"OK"} default button 1 with icon note
-EOF
 
-# ---------------------------------------------------
-# 🦊 Firefox → first-run choices
-# ---------------------------------------------------
-if [ -d "/Applications/Firefox.app" ]; then
-  open -a "Firefox" || true
+# --- Firefox first-run (if installed) ---
+if [[ -d "/Applications/Firefox.app" ]]; then
+  say ""
+  say "🦊 Firefox first-run tips:"
+  say "   • Uncheck 'Make Firefox my default browser'."
+  say "   • Turn off telemetry/crash reports if you prefer."
+  say "   • Sign into Firefox if you want add-ons to sync."
+  open -ga "Firefox" || true
+  pause "Press [Enter] once Firefox’s first-run choices are handled…"
 fi
-osascript <<'EOF'
-display dialog "Firefox first-run setup:\n\n1. Uncheck 'Make Firefox my default browser'\n2. Uncheck 'Send technical & interaction data to Mozilla'\n3. Uncheck 'Automatically send crash reports'\n\nTip: If you sign into your Firefox account, add-ons (incl. 1Password), bookmarks, and settings can sync automatically." buttons {"OK"} default button 1 with icon note
-EOF
 
-# ---------------------------------------------------
-# ✅ Done
-# ---------------------------------------------------
-echo ""
-echo "✅ Browser setup prompts shown:"
-echo "   • Safari 1Password permission + AutoFill off"
-echo "   • Chrome/Firefox first-run privacy/defaults"
-echo "🧠 If you use account sync (Google/Firefox), sign in now to pull your extensions."
+say ""
+say "✅ Browser setup prompts finished:"
+say "   • 1Password Accessibility checked"
+say "   • Safari extension allowed + AutoFill disabled"
+say "   • Chrome/Firefox first-run handled (if installed)"
