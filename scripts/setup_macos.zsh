@@ -1,232 +1,137 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+# macOS settings bootstrap (Ventura/Sonoma/Sequoia-safe)
 
-# ---------------------------------------------------
-# 🔐 Apple ID Sign-In Prompt
-# ---------------------------------------------------
-echo "🔐 Apple ID Sign-In Required"
-osascript <<EOF
-display dialog "To enable iCloud features like Safari, Photos, and Messages:\n\n1. Open System Settings\n2. Click your name at the top (or 'Sign in with your Apple ID')\n3. Sign in and choose what to sync\n\n🧠 Reminder: If you use 1Password, turn OFF iCloud Passwords & Keychain manually." buttons {"OK"}
-do shell script "open -a 'System Settings'"
-EOF
+set -euo pipefail
+pause() { read -r "?⏸️  $1"; }
+say()   { echo "$@"; }
+is_gui(){ [[ "$(stat -f %Su /dev/console 2>/dev/null || true)" == "$USER" ]]; }
 
-# ---------------------------------------------------
-# 🖱️ Trackpad: Three-Finger Drag
-# ---------------------------------------------------
+# ---------- GUI guard ----------
+if ! is_gui; then
+  say "ℹ️  No GUI console user detected; skipping interactive macOS settings."
+  exit 0
+fi
 
-: <<'COMMENT_BLOCK'
-───────────────────────────────────────────────────────────────────────────────
-⚠️ NOTE: As of macOS Ventura and later, these commands no longer fully enable
-"Three-Finger Drag" under:
+# ---------- Apple ID + iCloud ----------
+say "🔐 Apple ID & iCloud"
+osascript <<'OSA' >/dev/null 2>&1 || true
+try
+  tell application "System Settings" to activate
+end try
+OSA
+say "• Make sure you’re signed in with your Apple ID"
+say "• Then in System Settings → [Your Name] → iCloud, ensure iCloud services you want are ON"
+pause "Press [Enter] when Apple ID is signed in and iCloud services are set…"
 
-    System Settings > Accessibility > Pointer Control > Trackpad Options…
+# ---------- Trackpad reminder (no auto-detect) ----------
+echo "🖱️ If you use a trackpad, connect/pair it now."
+read -r "?   Open Bluetooth settings to pair? (Y/n) " ans
+if [[ -z "${ans:-}" || "$ans" =~ ^[Yy]$ ]]; then
+  open "x-apple.systempreferences:com.apple.BluetoothSettings" || true
+fi
+read -r "?⏸️  Press [Enter] once your trackpad is connected (or press now to skip)…"
 
-macOS now requires manual GUI interaction to enable:
-  - "Use trackpad for dragging"
-  - "Dragging style" → "Three Finger Drag"
+# ---------- Tap to click ----------
+say "🔧 Enabling Tap to Click…"
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true || true
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1 || true
+sudo defaults write com.apple.mouse.tapBehavior -int 1 || true
+say "✅ Tap to Click enabled"
 
-These commands are kept for documentation purposes and legacy reference only.
-# Legacy commands (no longer effective)
-# defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
-# defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
-# defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 2
-# sudo defaults write com.apple.universalaccess dragLock -bool false
-# sudo defaults write com.apple.universalaccess mouseDriver -int 1
-───────────────────────────────────────────────────────────────────────────────
-COMMENT_BLOCK
+# ---------- Secondary click (two-finger) ----------
+say "🔧 Enabling Secondary Click (two-finger)…"
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true || true
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true || true
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true || true
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2 || true
+defaults write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2 || true
+say "✅ Secondary Click set to two-finger tap"
 
-echo "🔧 Enabling Three-Finger Drag..."
-echo "⚠️ Three-Finger Drag must be enabled manually in System Settings"
-echo "   System Settings → Accessibility → Pointer Control → Trackpad Options…"
-echo "   Enable 'Use trackpad for dragging' and set style to 'Three Finger Drag'"
-read "ack_three_finger?Press [Enter] once Three-Finger Drag is enabled..."
+# ---------- Three-finger drag (manual) ----------
+say "⚠️ Three-Finger Drag must be enabled manually:"
+say "   System Settings → Accessibility → Pointer Control → Trackpad Options…"
+say "   Enable 'Use trackpad for dragging' → Dragging style: 'Three Finger Drag'"
+open "x-apple.systempreferences:com.apple.preference.universalaccess?Seeing_Mouse" || true
+pause "Press [Enter] after you’ve set Three-Finger Drag (or skip)…"
 
-# ---------------------------------------------------
-# 🖱️ Trackpad: Tap to Click
-# ---------------------------------------------------
-echo "🔧 Enabling Tap to Click..."
+# ---------- Dock & Mission Control ----------
+say "🔧 Configuring Dock & Mission Control…"
+defaults write com.apple.dock showMissionControlGestureEnabled -int 1 || true
+defaults write com.apple.dock showAppExposeGestureEnabled -int 1 || true
+defaults write com.apple.dock showLaunchpadGestureEnabled -int 1 || true
+defaults write com.apple.dock showDesktopGestureEnabled -int 1 || true
+defaults write com.apple.dock autohide -bool true || true
+defaults write com.apple.dock show-recents -bool false || true
+killall Dock >/dev/null 2>&1 || true
+say "✅ Dock gestures & behavior updated"
 
-# Enable tap-to-click on built-in trackpad
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+# ---------- Typing ----------
+say "🔧 Disabling Auto-Capitalization…"
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false || true
+say "✅ Auto-Capitalization disabled"
 
-# Enable tap-to-click for current user
-defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+# ---------- Appearance (Dark Mode) ----------
+say "🌘 Enabling Dark Mode…"
+osascript -e 'try
+  tell application "System Events" to tell appearance preferences to set dark mode to true
+end try' >/dev/null 2>&1 || true
+killall SystemUIServer >/dev/null 2>&1 || true
+say "✅ Dark Mode enabled"
 
-# Enable tap-to-click on login screen (global)
-sudo defaults write com.apple.mouse.tapBehavior -int 1
+# ---------- Finder ----------
+say "📁 Enabling Finder Path Bar…"
+defaults write com.apple.finder ShowPathbar -bool true || true
+killall Finder >/dev/null 2>&1 || true
+say "✅ Finder Path Bar enabled"
 
-echo "✅ Tap to Click enabled"
+# ---------- Screenshots ----------
+say "📸 Making screenshots copy to clipboard…"
+defaults write com.apple.screencapture target -string "clipboard" || true
+killall SystemUIServer >/dev/null 2>&1 || true
+say "✅ Screenshots will copy to clipboard"
 
-# ---------------------------------------------------
-# 🖱️ Trackpad: Secondary Click (Two-Finger Tap)
-# ---------------------------------------------------
-echo "🔧 Enabling Secondary Click (two-finger tap)..."
+# ---------- Power & Security ----------
+say "🔋 Power & Security…"
+defaults -currentHost write com.apple.screensaver idleTime -int 0 || true
+sudo pmset -a displaysleep 15 || true
+sudo pmset -a sleep 45 || true
+defaults write com.apple.screensaver askForPassword -int 1 || true
+defaults write com.apple.screensaver askForPasswordDelay -int 300 || true
+say "✅ Power & Security updated"
 
-# Enable right-click on trackpad
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
-defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
-defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
+# ---------- Dictation (manual) ----------
+say "🗣️ Dictation: enable manually (CLI options removed by Apple)."
+say "   System Settings → Keyboard → Dictation → On"
+open "x-apple.systempreferences:com.apple.preference.keyboard?Dictation" || true
+pause "Press [Enter] after enabling Dictation (or skip)…"
 
-# Set right-click to two-finger tap (2 = two-finger tap)
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
-defaults write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2
+# ---------- Accessibility: 1Password & ChatGPT ----------
+say "🔐 Accessibility for Quick Access apps"
+# Launch once so they appear in the list
+open -ga "1Password" >/dev/null 2>&1 || true
+open -ga "ChatGPT"   >/dev/null 2>&1 || true
+sleep 2
+open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility" || true
+say "• In Privacy & Security → Accessibility, enable: 1Password (if shown) and ChatGPT"
+say "• If 1Password isn’t listed, quit & relaunch it once, then return to this pane"
+pause "Press [Enter] after you’ve adjusted Accessibility (or skip)…"
 
-echo "✅ Secondary Click enabled (two-finger tap)"
+# ---------- iCloud Keychain & Safari AutoFill (manual) ----------
+say "🔐 Avoid duplicate password prompts:"
+say "   1) System Settings → [Your Name] → iCloud → Passwords & Keychain → OFF"
+say "   2) Safari → Settings → AutoFill:"
+say "        ☐ Using information from my contacts"
+say "        ☐ User names and passwords"
+say "        ☐ Credit cards"
+say "        ☐ Other forms"
+open -a Safari >/dev/null 2>&1 || true
+pause "Press [Enter] when those are set (or skip)…"
 
-# ---------------------------------------------------
-# 🖱️ Trackpad: Swipe Gestures
-# ---------------------------------------------------
-echo "🔧 Setting swipe gestures to use four fingers..."
+# ---------- FYI on random prompts ----------
+say "ℹ️ If you see prompts like 'VS Code wants to control System Events' or 'Use head gestures for Siri,'"
+say "   they’re optional. It’s safe to choose **Don’t Allow** if you don’t use those features."
 
-# Force 4-finger swipe (instead of 3-finger)
-defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 1
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 1
-
-echo "✅ Swipe gestures set to four fingers"
-
-# ---------------------------------------------------
-# 🧭 Dock & Mission Control Gestures
-# ---------------------------------------------------
-echo "🔧 Enabling Dock-related gestures and behaviors..."
-
-# Swipe up for Mission Control
-defaults write com.apple.dock showMissionControlGestureEnabled -int 1
-
-# Swipe down for App Exposé
-defaults write com.apple.dock showAppExposeGestureEnabled -int 1
-
-# Pinch for Launchpad
-defaults write com.apple.dock showLaunchpadGestureEnabled -int 1
-
-# Spread to show Desktop
-defaults write com.apple.dock showDesktopGestureEnabled -int 1
-
-# Automatically hide the Dock when not in use
-defaults write com.apple.dock autohide -bool true
-
-# Hide the 'Recent Applications' section to save Dock space
-defaults write com.apple.dock show-recents -bool false
-
-# Apply Dock settings
-killall Dock
-
-echo "✅ Dock-related gestures and behaviors configured"
-
-# ---------------------------------------------------
-# 📝 Typing Settings
-# ---------------------------------------------------
-echo "🔧 Disabling Auto-Capitalization..."
-
-# Turn off automatic capitalization
-defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
-
-echo "✅ Auto-Capitalization disabled"
-
-# ---------------------------------------------------
-# 🌘 UI Appearance
-# ---------------------------------------------------
-echo "🌘 Configuring UI appearance..."
-
-# Set system appearance to Dark Mode
-defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
-
-# Apply UI appearance settings
-killall SystemUIServer
-
-echo "✅ UI appearance configured"
-
-# ---------------------------------------------------
-# 📁 Finder Preferences
-# ---------------------------------------------------
-echo "🔧 Enabling Finder Path Bar..."
-
-# Show full file system path at the bottom of Finder windows
-defaults write com.apple.finder ShowPathbar -bool true
-
-# Apply changes
-killall Finder
-
-echo "✅ Finder Path Bar enabled (View → Show Path Bar)"
-
-# ---------------------------------------------------
-# 📸 Screenshot Settings
-# ---------------------------------------------------
-echo "📸 Configuring screenshots to copy to clipboard..."
-
-# Always copy screenshots to clipboard instead of saving to desktop
-defaults write com.apple.screencapture target clipboard
-
-# Apply changes
-killall SystemUIServer
-
-echo "✅ Screenshots will now be copied to clipboard by default"
-
-# ---------------------------------------------------
-# 🔋 Power & Security Settings
-# ---------------------------------------------------
-echo "🔋 Configuring Power & Security Settings..."
-
-# Disable screen saver (0 = never activate)
-defaults -currentHost write com.apple.screensaver idleTime -int 0
-
-# Turn off display after 15 minutes (on battery or charger)
-sudo pmset -a displaysleep 15
-
-# Sleep the system after 45 minutes (on battery or charger)
-sudo pmset -a sleep 45
-
-# Require password after 5 minutes of inactivity
-defaults write com.apple.screensaver askForPassword -int 1
-defaults write com.apple.screensaver askForPasswordDelay -int 300
-
-echo "✅ Power & Security Settings configured"
-
-# ---------------------------------------------------
-# 🗣️ Dictation Setup
-# ---------------------------------------------------
-echo "🗣️ Dictation Setup"
-
-echo "🧠 Reminder: When prompted with 'Improve Siri & Dictation', click 'Not Now' to avoid sharing audio recordings with Apple."
-
-echo "📍 To enable Dictation:"
-echo "1. Open System Settings → Keyboard"
-echo "2. Turn on Dictation"
-echo "3. Confirm any permissions (e.g. mic access, language)"
-echo ""
-echo "⏸️ Press Enter when you're done enabling dictation to continue..."
-read
-
-echo "✅ Dictation setup complete"
-
-# ---------------------------------------------------
-# 🔐 1Password Accessibility Permission
-# ---------------------------------------------------
-echo "🔐 1Password Quick Access requires enabling Accessibility:"
-echo "   1. Open System Settings → Privacy & Security → Accessibility"
-echo "   2. Click the 🔓 lock in the bottom-left corner and enter your password"
-echo "   3. Enable the checkbox next to '1Password'"
-echo "   4. Restart 1Password if it was already open"
-open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
-read "ack_access?Press [Enter] after enabling 1Password in Accessibility to continue..."
-echo "✅ 1Password Quick Access setup complete."
-
-# ---------------------------------------------------
-# 🔐 iCloud Keychain & Safari Password Prompts
-# ---------------------------------------------------
-echo "🔐 Prevent Safari and macOS from prompting to save passwords..."
-
-echo "🧠 Manual Steps:"
-echo "   1. Open System Settings → [Your Name] → iCloud → Passwords & Keychain"
-echo "   2. Toggle OFF 'Passwords & Keychain'"
-echo "   3. Then open Safari → Settings → AutoFill"
-echo "      - Turn off 'Usernames and passwords'"
-echo "      - Optionally disable other autofill fields"
-echo "   4. Restart your Mac to ensure changes persist"
-
-read "ack_keychain?Press [Enter] once you've disabled iCloud Keychain and Safari AutoFill..."
-
-# ---------------------------------------------------
-# 🎉 Completion Message
-# ---------------------------------------------------
-echo ""
-echo "🎉 macOS settings configuration complete!"
-echo "🔁 You may need to restart your Mac or individual apps (e.g., 1Password, Anki) for all settings to take effect."
+# ---------- Done ----------
+echo
+say "🎉 macOS settings configuration complete!"
+say "🔁 You may need to restart macOS or relaunch apps for everything to stick."
