@@ -230,6 +230,12 @@ if command -v ssh >/dev/null 2>&1; then
   ssh -G github.com | grep -E '^(identityagent|identityfile) ' || true
 fi
 
+# 🔍 Extra diagnostic: show which keys are actually loaded into the agent
+if command -v ssh-add >/dev/null 2>&1; then
+  echo "— Agent keys loaded (ssh-add -l):"
+  ssh-add -l 2>/dev/null || echo "  (no keys loaded)"
+fi
+
 echo ""
 echo "🧪 Testing SSH to GitHub (${GITHUB_HOST}) — “no shell access” on success is normal…"
 set +e
