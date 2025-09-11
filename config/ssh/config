@@ -1,15 +1,15 @@
 # 🌐 Global defaults (apply to all hosts)
 Host *
-  ServerAliveInterval 60      # keep connection alive every 60s
-  ServerAliveCountMax 3       # drop after 3 missed intervals
-  AddKeysToAgent yes          # add any IdentityFile keys to agent
-  UseKeychain yes             # let macOS Keychain remember passphrases
-  IdentitiesOnly yes          # only use explicitly listed keys
+  ServerAliveInterval 60        # keep connection alive every 60s
+  ServerAliveCountMax 3         # drop after 3 missed intervals
+  AddKeysToAgent yes            # add any IdentityFile keys to agent
+  UseKeychain yes               # let macOS Keychain remember passphrases (macOS only)
+  IdentitiesOnly yes            # only use explicitly listed keys
   IdentityAgent ~/.1password/agent.sock   # prefer 1Password SSH Agent when active
 
 # 🐙 GitHub-specific settings
 Host github.com
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519          # fallback if 1Password isn’t active  IdentityAgent ~/.1password/agent.sock
-  IdentityAgent ~/.1password/agent.sock
+  IdentityFile ~/.ssh/id_ed25519         # fallback if 1Password isn’t active
+  IdentityAgent ~/.1password/agent.sock  # use 1Password agent if available
