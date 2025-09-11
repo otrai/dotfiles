@@ -1,138 +1,86 @@
 #!/bin/zsh
+set -euo pipefail
 
-# 1. Ask for admin password upfront
+# 1) Sudo once (so later steps don't interrupt)
 if ! sudo -v &>/dev/null; then
-  echo "🔐 This script requires sudo privileges."
+  echo "🔐 This script needs sudo privileges."
   exit 1
 fi
 
-# 2. Install Xcode Command Line Tools (if not present)
+# 2) Xcode Command Line Tools (if missing)
 if ! xcode-select -p &>/dev/null; then
-  echo "🔧 Installing Xcode Command Line Tools..."
-  xcode-select --install
-  echo "⏳ Waiting for Xcode Command Line Tools to finish installing..."
-  read "REPLY?📦 Press [Enter] once installation is complete to continue..."
+  echo "🔧 Installing Xcode Command Line Tools…"
+  xcode-select --install || true
+  read "REPLY?⏸️ Press [Enter] after the tools finish installing…"
 else
   echo "✅ Xcode Command Line Tools already installed"
 fi
 
-# 3. Install Homebrew (if not present)
+# 3) Homebrew (install if missing) + shellenv
 if ! command -v brew &>/dev/null; then
-  echo "🍺 Installing Homebrew..."
+  echo "🍺 Installing Homebrew…"
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  # Configure brew for this shell session
-  if [[ -x "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x "/usr/local/bin/brew" ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  else
-    echo "❌ Homebrew installation failed or brew not found."
-    exit 1
-  fi
-
-  echo "✅ Homebrew installed and environment configured."
-else
-  echo "✅ Homebrew already installed"
-
-  # Make sure environment is configured
-  if [[ -x "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x "/usr/local/bin/brew" ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
 fi
 
-# 4. Install packages from Brewfile
-DOTFILES_PATH="$HOME/.dotfiles"
-BREWFILE="$DOTFILES_PATH/homebrew/Brewfile"
-
-# 4a. Prompt user to sign in if using MAS apps
-if [[ -f "$BREWFILE" ]] && grep -q '^mas ' "$BREWFILE"; then
-  echo "🛒 App Store apps detected in Brewfile (via mas)."
-  echo "💡 Please make sure you're signed in to the App Store *before* continuing."
-  echo "⏸️ Press Enter once you're signed in and ready to continue..."
-  read -r
+# Ensure brew is on PATH in this shell
+if [[ -x "/opt/homebrew/bin/brew" ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x "/usr/local/bin/brew" ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
 fi
+echo "✅ Homebrew ready"
 
-if [[ -f "$BREWFILE" ]]; then
-  echo "📦 Installing packages from Brewfile..."
-  brew bundle --file="$BREWFILE"
-  echo "✅ Brewfile installation complete."
-else
+# 4) Brewfile path
+DOTFILES="$HOME/.dotfiles"
+BREWFILE="$DOTFILES/homebrew/Brewfile"
+if [[ ! -f "$BREWFILE" ]]; then
   echo "❌ Brewfile not found at: $BREWFILE"
   exit 1
 fi
 
-# 5. Perform Homebrew maintenance
-echo "🔄 Updating Homebrew..."
+# 5) Simple MAS preflight: give you time to sign in (no detection)
+if grep -qE '(^| )mas ' "$BREWFILE"; then
+  # Make sure mas exists so Brewfile can use it
+  if ! command -v mas >/dev/null 2>&1; then
+    echo "📦 Installing mas (Mac App Store CLI)…"
+    brew install mas
+  fi
+  echo "🛍️ Please sign into the App Store (App Store → Account)."
+  echo "   I’ll open it; sign in, then return here."
+  open -a "App Store" || true
+  read "REPLY?⏸️ Press [Enter] to continue once you're signed in…"
+fi
+
+# 6) Install everything from the Brewfile
+echo "📦 Installing from Brewfile…"
+brew bundle --file="$BREWFILE"
+echo "✅ Brewfile install complete"
+
+# --- Postflight: ensure 1Password is launched once so Gatekeeper prompts
+if [[ -d "/Applications/1Password.app" ]]; then
+  echo "🔓 Opening 1Password once to clear Gatekeeper prompt…"
+  open -ga "/Applications/1Password.app" || true
+  echo "⏸️ When 1Password opens, approve the 'downloaded from Internet' prompt, then quit it and return here."
+  read -r "?Press [Enter] to continue…"
+fi
+
+# 8) Brew maintenance
+echo "🔄 brew update && brew upgrade && brew cleanup…"
 brew update
-
-echo "⬆️ Upgrading installed packages..."
 brew upgrade
-
-echo "🧹 Cleaning up old versions..."
 brew cleanup
+echo "✅ Homebrew maintenance complete"
 
-echo "✅ Homebrew maintenance complete."
-
-: <<'END_BLOCK_COMMENT'
-
-# 6. 🚧 Quarantine removal logic (commented for now)
-# These steps require additional work and permissions to be effective.
-# See the TODOs for details on possible solutions and security constraints.
-
-apps=(
-  "Visual Studio Code"
-  "Notion"
-  "ChatGPT"
-)
-
-for app in "${apps[@]}"; do
-  app_path="/Applications/$app.app"
-  if [[ -d "$app_path" ]]; then
-    echo "🔧 Unquarantining: $app_path"
-    sudo xattr -dr com.apple.quarantine "$app_path"
-  else
-    echo "⚠️ App not found: $app_path"
-  fi
-done
-
-tools=(
-  "displayplacer"
-)
-
-for tool in "${tools[@]}"; do
-  tool_path="$(which "$tool" 2>/dev/null)"
-  if [[ -x "$tool_path" ]]; then
-    echo "🔧 Unquarantining: $tool_path"
-    sudo xattr -dr com.apple.quarantine "$tool_path"
-  else
-    echo "⚠️ Tool not found or not executable: $tool"
-  fi
-done
-
-END_BLOCK_COMMENT
-
-echo "✅ Skipped quarantine removal — see TODOs in script."
-
-# 7. Prompt user to enable VS Code CLI
-if ! command -v code &>/dev/null; then
-  echo "⚠️ VS Code CLI not found."
-  echo "💡 Open VS Code, press ⇧⌘P, and run: Shell Command: Install 'code' command in PATH"
-  echo "⏸️ Waiting for you to set up the VS Code CLI..."
-  read "REPLY?🔄 Press [Enter] once you've added the 'code' command..."
-fi
-
-# 8. Install VS Code extensions from extensions.txt
-VSCODE_EXTENSIONS_FILE="$DOTFILES_PATH/ide/vscode/extensions.txt"
-
-if command -v code &>/dev/null && [[ -f "$VSCODE_EXTENSIONS_FILE" ]]; then
-  echo "🧩 Installing VS Code extensions..."
+# 9) VS Code CLI + extensions (best-effort, no pauses)
+VSCODE_EXTS="$DOTFILES/ide/vscode/extensions.txt"
+if command -v code >/dev/null 2>&1 && [[ -f "$VSCODE_EXTS" ]]; then
+  echo "🧩 Installing VS Code extensions…"
   while IFS= read -r ext; do
-    [[ -n "$ext" ]] && code --install-extension "$ext" --force
-  done < "$VSCODE_EXTENSIONS_FILE"
-  echo "✅ VS Code extensions installation complete."
+    [[ -n "$ext" ]] && code --install-extension "$ext" --force || true
+  done < "$VSCODE_EXTS"
+  echo "✅ VS Code extensions installed"
 else
-  echo "⚠️ VS Code CLI still not found or extensions list missing."
+  echo "ℹ️ Skip VS Code extensions (CLI not found or list missing)."
 fi
+
+echo "🎉 Homebrew setup finished."
