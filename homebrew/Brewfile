@@ -37,6 +37,12 @@ cask "1password"
 mas "1Password for Safari", id: 1569813296
 
 # -------------------------------
+# ⌨️ Input Device Utilities
+# -------------------------------
+# Logitech keyboard & mouse configuration tool
+cask "logi-options-plus"
+
+# -------------------------------
 # 🌐 Browsers
 # -------------------------------
 # Cross-platform browser by Google
