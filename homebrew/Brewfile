@@ -1,51 +1,81 @@
-# Utility to configure multi-display resolutions and arrangements
+# -------------------------------
+# 🌐 Browsers
+# -------------------------------
+cask "firefox"
+cask "google-chrome"
+
+# -------------------------------
+# ☁️ Cloud
+# -------------------------------
+cask "dropbox"
+
+# -------------------------------
+# 📡 Communication
+# -------------------------------
+cask "discord"
+cask "microsoft-teams"
+cask "proton-mail"
+cask "protonvpn"
+cask "zoom"
+
+# -------------------------------
+# 🖥️ Command Line
+# -------------------------------
 brew "displayplacer"
-# Distributed revision control system
 brew "git"
-# Mac App Store command-line interface
 brew "mas"
 
 # -------------------------------
-# 🧠 Core Productivity Tools
+# 📝 Documents
 # -------------------------------
-# OpenAI's official ChatGPT desktop app
-cask "chatgpt"
-# App to write, plan, collaborate, and get organised
+cask "microsoft-office"
+cask "pdf-expert"
+mas "Kindle", id: 302584613
+
+# -------------------------------
+# 🌍 Language
+# -------------------------------
+mas "Rosetta Stone", id: 1476088902
+
+# -------------------------------
+# 📐 Math
+# -------------------------------
+cask "mathpix-snipping-tool"
+
+# -------------------------------
+# 📚 Notes
+# -------------------------------
 cask "notion"
-# Open-source code editor
+mas "MindNode", id: 1289197285
+mas "MindNode Next", id: 6446116532
+mas "Notability", id: 360593530
+
+# -------------------------------
+# 👨‍💻 Programming
+# -------------------------------
+cask "jetbrains-toolbox"
 cask "visual-studio-code"
 
 # -------------------------------
-# 📚 Productivity / Document Tools
+# 🧠 Productivity
 # -------------------------------
-# 🧾 PDF viewer/editor (requires license and manual sign-in)
-cask "pdf-expert"
-# 🧩 Microsoft Office suite (may trigger Microsoft AutoUpdate with sudo later)
-cask "microsoft-office"
+cask "chatgpt"
 
 # -------------------------------
-# 🧠 Creativity and Thinking Tools
+# 🔐 Security
 # -------------------------------
-mas "MindNode", id: 1289197285
-mas "MindNode Next", id: 6446116532
-
-# -------------------------------
-# 🔐 Security Tools / Password Managers
-# -------------------------------
-# Primary password manager (uses old email to sign-in on computer)
 cask "1password"
 mas "1Password for Safari", id: 1569813296
 
 # -------------------------------
-# ⌨️ Input Device Utilities
+# 🎛️ System
 # -------------------------------
-# Logitech keyboard & mouse configuration tool
+cask "alfred"
 cask "logi-options-plus"
+mas "24 Hour Wallpaper", id: 1226087575
+mas "TextSniper", id: 1528890965
 
 # -------------------------------
-# 🌐 Browsers
+# 💹 Trading
 # -------------------------------
-# Cross-platform browser by Google
-cask "google-chrome"
-# Open-source browser by Mozilla
-cask "firefox"
+cask "tradingview"
