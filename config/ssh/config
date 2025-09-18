@@ -1,15 +1,22 @@
-# 🌐 Global defaults (apply to all hosts)
+# 🌐 Global defaults → use 1Password everywhere by default
 Host *
-  ServerAliveInterval 60        # keep connection alive every 60s
-  ServerAliveCountMax 3         # drop after 3 missed intervals
-  AddKeysToAgent yes            # add any IdentityFile keys to agent
-  UseKeychain yes               # let macOS Keychain remember passphrases (macOS only)
-  IdentitiesOnly yes            # only use explicitly listed keys
-  IdentityAgent ~/.1password/agent.sock   # prefer 1Password SSH Agent when active
+  ServerAliveInterval 60          # keep connection alive every 60s
+  ServerAliveCountMax 3           # drop after 3 missed intervals
+  IdentityAgent ~/.1password/agent.sock  # use 1Password SSH agent
+  IdentitiesOnly no               # allow agent keys (don’t force files on disk)
 
-# 🐙 GitHub-specific settings
+# 🐙 GitHub via 1Password (normal use)
 Host github.com
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519         # fallback if 1Password isn’t active
-  IdentityAgent ~/.1password/agent.sock  # use 1Password agent if available
+  # Inherits IdentityAgent + IdentitiesOnly from global block
+  # → Will use 1Password agent unless overridden
+
+# 🐙 GitHub via disk key (optional alias)
+# Use when you explicitly want ~/.ssh/id_ed25519 instead of 1Password
+Host github-disk
+  HostName github.com
+  User git
+  IdentityAgent none              # disable 1Password agent
+  IdentityFile ~/.ssh/id_ed25519  # use the key stored on disk
+  IdentitiesOnly yes              # force SSH to only use the file
