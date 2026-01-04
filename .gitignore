@@ -14,3 +14,6 @@
 # IDE folders
 .vscode/
 .idea/
+
+# Alfred
+config/alfred/Alfred.alfredpreferences/license.plist
