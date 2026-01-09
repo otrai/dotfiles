@@ -17,3 +17,6 @@
 
 # Alfred
 config/alfred/Alfred.alfredpreferences/license.plist
+
+# Alfred local machine state
+config/alfred/Alfred.alfredpreferences/preferences/local/
