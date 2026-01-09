@@ -20,3 +20,6 @@ config/alfred/Alfred.alfredpreferences/license.plist
 
 # Alfred local machine state
 config/alfred/Alfred.alfredpreferences/preferences/local/
+
+# Alfred preferences are synced via Dropbox/iCloud, not git
+config/alfred/Alfred.alfredpreferences/
