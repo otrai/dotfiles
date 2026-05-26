@@ -25,6 +25,7 @@ cask "zoom"
 brew "displayplacer"
 brew "git"
 brew "mas"
+brew "tree"
 
 # -------------------------------
 # 📝 Documents
