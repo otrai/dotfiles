@@ -60,9 +60,10 @@ cask "visual-studio-code"
 cask "temurin@17"
 
 # -------------------------------
-# 🧠 Productivity
+# 🧠 🤖 AI
 # -------------------------------
 cask "chatgpt"
+cask "codex"
 cask "claude"
 cask "claude-code"
 
