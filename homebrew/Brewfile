@@ -62,6 +62,8 @@ cask "temurin@17"
 # 🧠 Productivity
 # -------------------------------
 cask "chatgpt"
+cask "claude"
+cask "claude-code"
 
 # -------------------------------
 # 🔐 Security
