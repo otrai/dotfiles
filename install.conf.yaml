@@ -49,3 +49,8 @@
     - command: ./scripts/setup_display.zsh
       stdout: true
       stderr: true
+    
+    # 📦 Step 7: Clone active GitHub repositories into ~/code
+    - command: ./scripts/setup_repos.zsh
+      stdout: true
+      stderr: true

@@ -23,6 +23,7 @@ cask "zoom"
 # 🖥️ Command Line
 # -------------------------------
 brew "displayplacer"
+brew "gh"
 brew "git"
 brew "mas"
 brew "tree"
