@@ -78,6 +78,12 @@ end try' >/dev/null 2>&1 || true
 killall SystemUIServer >/dev/null 2>&1 || true
 say "✅ Dark Mode enabled"
 
+# ---------- Menu Bar ----------
+say "🔧 Enabling menu bar auto-hide…"
+defaults write NSGlobalDomain _HIHideMenuBar -bool true || true
+killall SystemUIServer >/dev/null 2>&1 || true
+say "✅ Menu bar auto-hide enabled"
+
 # ---------- Finder ----------
 say "📁 Enabling Finder Path Bar…"
 defaults write com.apple.finder ShowPathbar -bool true || true
