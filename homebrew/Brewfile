@@ -65,7 +65,6 @@ cask "temurin@17"
 # -------------------------------
 cask "chatgpt"
 cask "codex"
-cask "chatgpt-atlas"
 cask "claude"
 cask "claude-code"
 
