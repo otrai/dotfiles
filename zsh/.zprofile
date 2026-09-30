@@ -39,3 +39,12 @@ export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 # Info is another documentation format used by some command-line tools.
 # Add Homebrew's Info folder and preserve any existing locations.
 export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
+
+
+# JetBrains Toolbox terminal launchers.
+if [[ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ]]; then
+    path+=("$HOME/Library/Application Support/JetBrains/Toolbox/scripts")
+fi
+
+# Keep command search directories unique.
+typeset -U path

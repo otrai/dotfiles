@@ -7,6 +7,9 @@
 - clean: ['~']
 
 - link:
+    # Shell login configuration
+    ~/.zprofile: zsh/.zprofile
+
     # 🔐 SSH config
     ~/.ssh/config: config/ssh/config
 
