@@ -79,7 +79,7 @@ mas "1Password for Safari", id: 1569813296
 # 🎛️ System
 # -------------------------------
 cask "alfred"
-cask "logi-options-plus"
+cask "logi-options+"
 mas "24 Hour Wallpaper", id: 1226087575
 mas "TextSniper", id: 1528890965
 
@@ -87,3 +87,4 @@ mas "TextSniper", id: 1528890965
 # 💹 Trading
 # -------------------------------
 cask "tradingview"
+cask "trader-workstation"
